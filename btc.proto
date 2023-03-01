@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "./pb;pb";
+
+import "global.proto";
+
+// BTCService GRPC Service
+service BTCService {
+  rpc Segwit (EmptyPost) returns (StringResponse) {}
+  rpc MultiSig (EmptyPost) returns (StringResponse) {}
+}

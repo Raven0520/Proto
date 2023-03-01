@@ -1,0 +1,21 @@
+/* 全局 Protobuf */
+
+syntax = "proto3";
+
+package pb;
+
+option go_package           = "./pb;pb";
+option java_multiple_files  = true;
+option java_outer_classname = "global";
+
+/** ************** Global Request Params ************** **/
+
+message EmptyPost {}
+
+/**************** Response Message ****************/
+
+// StringResponse Return String
+message StringResponse {
+  string Message = 1 [json_name = "message"];
+  string Data    = 2 [json_name = "data"];
+}
