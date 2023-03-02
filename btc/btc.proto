@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package pb;
+package btc;
 
-option go_package = "./pb;pb";
+option go_package = "./btc;btc";
 
-import "global.proto";
+import "btc/global.proto";
 
 // BTCService GRPC Service
 service BTCService {

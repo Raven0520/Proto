@@ -2,9 +2,9 @@
 
 syntax = "proto3";
 
-package pb;
+package btc;
 
-option go_package           = "./pb;pb";
+option go_package           = "./btc;btc";
 option java_multiple_files  = true;
 option java_outer_classname = "global";
 
