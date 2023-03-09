@@ -18,8 +18,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BTCServiceClient interface {
-	Segwit(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*StringResponse, error)
-	MultiSig(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*StringResponse, error)
+	NewSegwit(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*SegwitResponse, error)
+	SegwitFromMnemonic(ctx context.Context, in *MnemonicPost, opts ...grpc.CallOption) (*SegwitResponse, error)
+	SegwitFromSeed(ctx context.Context, in *SeedPost, opts ...grpc.CallOption) (*SegwitResponse, error)
+	MultiSig(ctx context.Context, in *MultiSigPost, opts ...grpc.CallOption) (*MultiSigResponse, error)
 }
 
 type bTCServiceClient struct {
@@ -30,17 +32,35 @@ func NewBTCServiceClient(cc grpc.ClientConnInterface) BTCServiceClient {
 	return &bTCServiceClient{cc}
 }
 
-func (c *bTCServiceClient) Segwit(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*StringResponse, error) {
-	out := new(StringResponse)
-	err := c.cc.Invoke(ctx, "/btc.BTCService/Segwit", in, out, opts...)
+func (c *bTCServiceClient) NewSegwit(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*SegwitResponse, error) {
+	out := new(SegwitResponse)
+	err := c.cc.Invoke(ctx, "/btc.BTCService/NewSegwit", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bTCServiceClient) MultiSig(ctx context.Context, in *EmptyPost, opts ...grpc.CallOption) (*StringResponse, error) {
-	out := new(StringResponse)
+func (c *bTCServiceClient) SegwitFromMnemonic(ctx context.Context, in *MnemonicPost, opts ...grpc.CallOption) (*SegwitResponse, error) {
+	out := new(SegwitResponse)
+	err := c.cc.Invoke(ctx, "/btc.BTCService/SegwitFromMnemonic", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bTCServiceClient) SegwitFromSeed(ctx context.Context, in *SeedPost, opts ...grpc.CallOption) (*SegwitResponse, error) {
+	out := new(SegwitResponse)
+	err := c.cc.Invoke(ctx, "/btc.BTCService/SegwitFromSeed", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bTCServiceClient) MultiSig(ctx context.Context, in *MultiSigPost, opts ...grpc.CallOption) (*MultiSigResponse, error) {
+	out := new(MultiSigResponse)
 	err := c.cc.Invoke(ctx, "/btc.BTCService/MultiSig", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -52,8 +72,10 @@ func (c *bTCServiceClient) MultiSig(ctx context.Context, in *EmptyPost, opts ...
 // All implementations must embed UnimplementedBTCServiceServer
 // for forward compatibility
 type BTCServiceServer interface {
-	Segwit(context.Context, *EmptyPost) (*StringResponse, error)
-	MultiSig(context.Context, *EmptyPost) (*StringResponse, error)
+	NewSegwit(context.Context, *EmptyPost) (*SegwitResponse, error)
+	SegwitFromMnemonic(context.Context, *MnemonicPost) (*SegwitResponse, error)
+	SegwitFromSeed(context.Context, *SeedPost) (*SegwitResponse, error)
+	MultiSig(context.Context, *MultiSigPost) (*MultiSigResponse, error)
 	mustEmbedUnimplementedBTCServiceServer()
 }
 
@@ -61,10 +83,16 @@ type BTCServiceServer interface {
 type UnimplementedBTCServiceServer struct {
 }
 
-func (UnimplementedBTCServiceServer) Segwit(context.Context, *EmptyPost) (*StringResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Segwit not implemented")
+func (UnimplementedBTCServiceServer) NewSegwit(context.Context, *EmptyPost) (*SegwitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewSegwit not implemented")
 }
-func (UnimplementedBTCServiceServer) MultiSig(context.Context, *EmptyPost) (*StringResponse, error) {
+func (UnimplementedBTCServiceServer) SegwitFromMnemonic(context.Context, *MnemonicPost) (*SegwitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SegwitFromMnemonic not implemented")
+}
+func (UnimplementedBTCServiceServer) SegwitFromSeed(context.Context, *SeedPost) (*SegwitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SegwitFromSeed not implemented")
+}
+func (UnimplementedBTCServiceServer) MultiSig(context.Context, *MultiSigPost) (*MultiSigResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MultiSig not implemented")
 }
 func (UnimplementedBTCServiceServer) mustEmbedUnimplementedBTCServiceServer() {}
@@ -80,26 +108,62 @@ func RegisterBTCServiceServer(s grpc.ServiceRegistrar, srv BTCServiceServer) {
 	s.RegisterService(&BTCService_ServiceDesc, srv)
 }
 
-func _BTCService_Segwit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _BTCService_NewSegwit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(EmptyPost)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BTCServiceServer).Segwit(ctx, in)
+		return srv.(BTCServiceServer).NewSegwit(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/btc.BTCService/Segwit",
+		FullMethod: "/btc.BTCService/NewSegwit",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BTCServiceServer).Segwit(ctx, req.(*EmptyPost))
+		return srv.(BTCServiceServer).NewSegwit(ctx, req.(*EmptyPost))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BTCService_SegwitFromMnemonic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MnemonicPost)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BTCServiceServer).SegwitFromMnemonic(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/btc.BTCService/SegwitFromMnemonic",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BTCServiceServer).SegwitFromMnemonic(ctx, req.(*MnemonicPost))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BTCService_SegwitFromSeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SeedPost)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BTCServiceServer).SegwitFromSeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/btc.BTCService/SegwitFromSeed",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BTCServiceServer).SegwitFromSeed(ctx, req.(*SeedPost))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _BTCService_MultiSig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EmptyPost)
+	in := new(MultiSigPost)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -111,7 +175,7 @@ func _BTCService_MultiSig_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/btc.BTCService/MultiSig",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BTCServiceServer).MultiSig(ctx, req.(*EmptyPost))
+		return srv.(BTCServiceServer).MultiSig(ctx, req.(*MultiSigPost))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -124,8 +188,16 @@ var BTCService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BTCServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Segwit",
-			Handler:    _BTCService_Segwit_Handler,
+			MethodName: "NewSegwit",
+			Handler:    _BTCService_NewSegwit_Handler,
+		},
+		{
+			MethodName: "SegwitFromMnemonic",
+			Handler:    _BTCService_SegwitFromMnemonic_Handler,
+		},
+		{
+			MethodName: "SegwitFromSeed",
+			Handler:    _BTCService_SegwitFromSeed_Handler,
 		},
 		{
 			MethodName: "MultiSig",

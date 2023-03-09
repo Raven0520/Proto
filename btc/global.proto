@@ -19,3 +19,9 @@ message StringResponse {
   string Message = 1 [json_name = "message"];
   string Data    = 2 [json_name = "data"];
 }
+
+// BoolResponse Return true / false
+message BoolResponse {
+  string Message = 1 [json_name = "message"];
+  bool   Data    = 2 [json_name = "data"];
+}
